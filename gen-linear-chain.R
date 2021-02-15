@@ -1,7 +1,5 @@
 # Function to generate signals on linear chain graphs
 # Author: Sayantan Banerjee
-# Date created: Jan 07, 2021
-# Last modified on: Jan 07, 2021
 
 ##################################################################################
 # Load required packages
