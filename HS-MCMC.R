@@ -108,7 +108,6 @@ denoise_MCMC = function(n = 100, theta_0, y){
   ##### Simulating tau2 ####
   
   tau2 = 1/rgamma(1, n/2, 1/xi + sum( (diff(theta[1:n]))^2/lambda_sq[2:n])/(2*sigma2))
-  #cat("NAN detected:", sum(is.nan(tau2)),"\n")
   
   keep.tau2[iter] = tau2
   
