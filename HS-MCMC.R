@@ -13,8 +13,7 @@ require(MASS)
 # Previous steps:
 # Step 1: Generate the linear chain graph and the true signal (gen-linear-chain.R)
 # Step 2: Generate the data
-# Step 3: Get edge incidence matrix
-# Step 4: MCMC (this code)
+# Step 3: MCMC (this code)
 
 # Arguments required
 # n -- number of nodes
@@ -71,15 +70,12 @@ denoise_MCMC = function(n = 100, theta_0, y){
   mu[1] = zeta[1]*(y[1] + theta[2]/(lambda_sq[2]*tau2))/sigma2
   
   theta[1] = rnorm(1, mean = mu[1], sd = sqrt(zeta[1]))
-  
-  #cat("NAN detected:", sum(is.nan(zeta)),"\n")
-  
+    
   # Sampling rest of the theta s
   
   for(i in 2:n){
     zeta[i] = sigma2/(1 + 1/(lambda_sq[i+1]*tau2) + 1/(lambda_sq[i]*tau2))
     
-   # cat("NAN detected:", sum(is.nan(zeta)),"\n")
     mu[i] = zeta[i]*(y[i] + theta[i+1]/(lambda_sq[i+1]*tau2) +
                        theta[i-1]/(lambda_sq[i]*tau2))/sigma2
     
@@ -95,11 +91,6 @@ denoise_MCMC = function(n = 100, theta_0, y){
   for(i in 2:n){
     lambda_sq[i] = 1/rgamma(1, 1, 1/nu[i] + (theta[i] - theta[i-1])^2/(2*sigma2*tau2))
     nu[i] = 1/rgamma(1, 1, 1 + 1/lambda_sq[i])
-    
-    
-    #cat("NAN detected:", sum(is.nan(lambda_sq)),"\n")
-    
-    #cat("NAN detected:", sum(is.nan(nu)),"\n")
   }
   
   keep.lambda_sq[iter, ] = lambda_sq[2:n]
@@ -112,9 +103,6 @@ denoise_MCMC = function(n = 100, theta_0, y){
                                     theta[1]^2/lambda_sq[1])/2
   
   sigma2 = 1/rgamma(1, param1, param2)
- # cat("NAN detected:", sum(is.nan(sigma2)),"\n")
-  
-  
   keep.sigma2[iter] = sigma2 
   
   ##### Simulating tau2 ####
@@ -127,7 +115,6 @@ denoise_MCMC = function(n = 100, theta_0, y){
   ##### Simulating xi ####
   
   xi = 1/rgamma(1, 1, 1 + 1/tau2)
-  #cat("NAN detected:", sum(is.nan(xi)),"\n")
   
   keep.xi[iter] = xi
   
