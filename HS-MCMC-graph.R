@@ -1,24 +1,20 @@
 # MCMC for Bayesian fusion with Horseshoe prior for graph de-noising
 # Author: Sayantan Banerjee
-# Date created: Mar 19, 2021
-# Last modified on: Mar 19, 2021
 
 
 ##########################################################################
 # Load required packages
 require(igraph)
 require(MASS)
-
-# Previous steps:
-# Step 1: Generate the linear chain graph and the true signal (gen-linear-chain.R)
-# Step 2: Generate the data
-# Step 3: Get edge incidence matrix
-# Step 4: MCMC (this code)
+source("get-DFS.R")
 
 # Arguments required
 # n -- number of nodes
 # theta_0 -- true signal (for computing MSE)
 # y -- data
+# g_chain -- chain graph obtained from actual graph
+# E_T -- edge-incidence matrix for the DFS-chain graph
+# root -- root node used for constructing DFS-chain graph
 
 denoise_MCMC = function(n = 100, theta_0, y, g_chain, E_T, root){
   
@@ -77,9 +73,7 @@ denoise_MCMC = function(n = 100, theta_0, y, g_chain, E_T, root){
                              sum(theta[nei.set]/(lambda_sq[edge.set]*tau2)))/sigma2
     
     theta[root] = rnorm(1, mean = mu[root], sd = sqrt(zeta[root]))
-    
-    #cat("NAN detected:", sum(is.nan(zeta)),"\n")
-    
+        
     # Sampling rest of the theta s
     
     for(i in setdiff(1:n,root)){
@@ -91,7 +85,6 @@ denoise_MCMC = function(n = 100, theta_0, y, g_chain, E_T, root){
       
       zeta[i] = sigma2/(1 + sum(1/(lambda_sq[edge.set]*tau2)))
       
-      # cat("NAN detected:", sum(is.nan(zeta)),"\n")
       mu[i] = zeta[i]*(y[i] + 
                          sum(theta[nei.set]/(lambda_sq[edge.set]*tau2)))/sigma2
       
@@ -111,10 +104,6 @@ denoise_MCMC = function(n = 100, theta_0, y, g_chain, E_T, root){
                                 (theta[id[1]] - theta[id[2]])^2/(2*sigma2*tau2))
       nu[k] = 1/rgamma(1, 1, 1 + 1/lambda_sq[k])
       
-      
-      #cat("NAN detected:", sum(is.nan(lambda_sq)),"\n")
-      
-      #cat("NAN detected:", sum(is.nan(nu)),"\n")
       keep.lambda_sq[iter, k] <- lambda_sq[k]
       keep.nu[iter, k] <- nu[k]
       
@@ -127,23 +116,19 @@ denoise_MCMC = function(n = 100, theta_0, y, g_chain, E_T, root){
     param2 = b_s + theta[root]^2/(2*lambda_sq0) + 0.5*sum((y-theta[1:n])^2) +
       0.5*c(t(T)%*%T)/tau2
     
-    sigma2 = 1/rgamma(1, param1, param2)
-    # cat("NAN detected:", sum(is.nan(sigma2)),"\n")
-    
+    sigma2 = 1/rgamma(1, param1, param2)   
     
     keep.sigma2[iter] = sigma2 
     
     ##### Simulating tau2 ####
     
     tau2 = 1/rgamma(1, n/2, 1/xi + c(t(T)%*%T)/(2*sigma2))
-    #cat("NAN detected:", sum(is.nan(tau2)),"\n")
     
     keep.tau2[iter] = tau2
     
     ##### Simulating xi ####
     
     xi = 1/rgamma(1, 1, 1 + 1/tau2)
-    #cat("NAN detected:", sum(is.nan(xi)),"\n")
     
     keep.xi[iter] = xi
     
