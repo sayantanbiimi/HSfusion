@@ -1,19 +1,11 @@
 # MCMC for Bayesian fusion with Horseshoe prior
 # Simulations with linear chain graphs
 # Author: Sayantan Banerjee
-# Date created: Dec 28, 2020
-# Last modified on: Dec 28, 2020
-
 
 ##########################################################################
 # Load required packages
 require(igraph)
 require(MASS)
-
-# Previous steps:
-# Step 1: Generate the linear chain graph and the true signal (gen-linear-chain.R)
-# Step 2: Generate the data
-# Step 3: MCMC (this code)
 
 # Arguments required
 # n -- number of nodes
@@ -36,8 +28,8 @@ denoise_MCMC = function(n = 100, theta_0, y){
   
   # Initialize
   
-  n.iter = 2000 # number of MCMC samples
-  burnin = 200 # burn-in samples
+  n.iter = 5000 # number of MCMC samples
+  burnin = 500 # burn-in samples
   
   theta = c(y,0)
   mu = rep(0,n)
