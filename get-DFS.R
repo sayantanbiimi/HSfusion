@@ -7,6 +7,7 @@
 #            root -- root node for DFS
 # Value: g_chain -- DFS chain graph
 #        E_T -- edge incidence matrix of the DFS chain
+#        root -- root node for DFS  
 #####################################################################
 
 require(igraph)
